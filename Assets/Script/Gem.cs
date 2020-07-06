@@ -1,20 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Gem : MonoBehaviour
 {
-    public GemType gemType;
+    public GemType GemType { get; private set; }
 
-    public Vector2 position
-    {
-        get;
-        private set;
-    }
+    public Vector2 Position { get; private set; }
 
     public void ChangeGemPosition(int newX, int newY)
     {
-        position = new Vector2(newX, newY);
-        gameObject.name = string.Format("[{0}] in [{1}]", gemType, position);
+        Position = new Vector2(newX, newY);
+        gameObject.name = string.Format("[{0}] in [{1}]", GemType, Position);
     }
 }

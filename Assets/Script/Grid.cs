@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-    public int rows, columns;
+    public int rows;
+
+    public int columns;
+
     private Gem[,] gridGems;
-    private GameObject[] gems;
+
+    private PossibleGem[] gems;
 
     void Start()
     {
@@ -25,14 +23,14 @@ public class Grid : MonoBehaviour
         {
             for (int y = 0; y < rows; y++)
             {
-                gridGems[x, y] = InstantiateGems(x, y);
+                gridGems[x, y] = InstantiateGem(x, y);
             }
         }
     }
 
-    private Gem InstantiateGems(int x, int y)
+    private Gem InstantiateGem(int x, int y)
     {
-        GameObject randomGem = gems[UnityEngine.Random.Range(0, gems.Length)];
+        PossibleGem randomGem = gems[UnityEngine.Random.Range(0, gems.Length)];
         Gem newGem = Instantiate(randomGem, new Vector2(x, y), Quaternion.identity).GetComponent<Gem>();
         newGem.ChangeGemPosition(x, y);
         return newGem;
@@ -40,10 +38,10 @@ public class Grid : MonoBehaviour
 
     private void LoadGems()
     {
-        gems = Resources.LoadAll<GameObject>("Prefabs");
+        gems = Resources.LoadAll<PossibleGem>("Prefabs");
         for (int i = 0; i < gems.Length; i++)
         {
-            gems[i].GetComponent<Gem>().gemType = (GemType)i;
+            gems[i].SetGemType((GemType)i);
         }
     }
 }
