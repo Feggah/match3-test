@@ -6,9 +6,8 @@ public class Gem : MonoBehaviour
 
     public Vector2 Position { get; private set; }
 
-    public void ChangeGemPosition(int newX, int newY)
+    public void ChangeGemPosition(float newX, float newY)
     {
         Position = new Vector2(newX, newY);
-        gameObject.name = string.Format("[{0}] in [{1}]", GemType, Position);
     }
 }
