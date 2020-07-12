@@ -40,12 +40,12 @@ public class GridController : MonoBehaviour
 
     private IEnumerator SwapGem(Gem from, Gem to, float swapDuration)
     {
-        Vector2 initialPosition = from.transform.position;
+        Vector2 initialGemPosition = from.transform.position;
 
         AllowSwapBetweenGems(true);
 
         StartCoroutine(from.transform.Move(to.transform.position, swapDuration));
-        StartCoroutine(to.transform.Move(initialPosition, swapDuration));
+        StartCoroutine(to.transform.Move(initialGemPosition, swapDuration));
 
         yield return new WaitForSeconds(swapDuration);
 
@@ -64,7 +64,7 @@ public class GridController : MonoBehaviour
         {
             return Grid.GridGems[(int)(TouchedObject.Position.x + Vector2.right.x), (int)(TouchedObject.Position.y + Vector2.right.y)];
         }
-        else if ((angleToXAxis > 45 && angleToXAxis <= 135) && ((TouchedObject.Position.y + Vector2.down.y) > 0))
+        else if ((angleToXAxis > 45 && angleToXAxis <= 135) && ((TouchedObject.Position.y + Vector2.down.y) >= 0))
         {
             return Grid.GridGems[(int)(TouchedObject.Position.x + Vector2.down.x), (int)(TouchedObject.Position.y + Vector2.down.y)];
         }
@@ -72,7 +72,7 @@ public class GridController : MonoBehaviour
         {
             return Grid.GridGems[(int)(TouchedObject.Position.x + Vector2.up.x), (int)(TouchedObject.Position.y + Vector2.up.y)];
         }
-        else if ((angleToXAxis > 135 || angleToXAxis < -135) && ((TouchedObject.Position.x + Vector2.left.x) > 0))
+        else if ((angleToXAxis > 135 || angleToXAxis < -135) && ((TouchedObject.Position.x + Vector2.left.x) >= 0))
         {
             return Grid.GridGems[(int)(TouchedObject.Position.x + Vector2.left.x), (int)(TouchedObject.Position.y + Vector2.left.y)];
         }
