@@ -2,46 +2,35 @@
 
 public class Grid : MonoBehaviour
 {
-    public int rows;
+    public int Rows;
 
-    public int columns;
+    public int Columns;
 
-    private Gem[,] gridGems;
+    public GridController GridController;
 
-    private PossibleGem[] gems;
+    public Gem[,] GridGems;
 
     void Start()
     {
-        LoadGems();
+        GridController.LoadGems();
         CreateGrid();
     }
 
-    private void CreateGrid()
+    void Update()
     {
-        gridGems = new Gem[columns, rows];
-        for (int x = 0; x < columns; x++)
+        GridController.DetectInputEvents();
+    }
+
+    public void CreateGrid()
+    {
+        GridGems = new Gem[Columns, Rows];
+
+        for (int x = 0; x < Columns; x++)
         {
-            for (int y = 0; y < rows; y++)
+            for (int y = 0; y < Rows; y++)
             {
-                gridGems[x, y] = InstantiateGem(x, y);
+                GridGems[x, y] = GridController.InstantiateGem(x, y);
             }
-        }
-    }
-
-    private Gem InstantiateGem(int x, int y)
-    {
-        PossibleGem randomGem = gems[UnityEngine.Random.Range(0, gems.Length)];
-        Gem newGem = Instantiate(randomGem, new Vector2(x, y), Quaternion.identity).GetComponent<Gem>();
-        newGem.ChangeGemPosition(x, y);
-        return newGem;
-    }
-
-    private void LoadGems()
-    {
-        gems = Resources.LoadAll<PossibleGem>("Prefabs");
-        for (int i = 0; i < gems.Length; i++)
-        {
-            gems[i].SetGemType((GemType)i);
         }
     }
 }

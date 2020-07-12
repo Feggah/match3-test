@@ -7,5 +7,6 @@ public class PossibleGem : MonoBehaviour
     public void SetGemType(GemType gemType)
     {
         GemType = gemType;
+        gameObject.name = GemType.ToString();
     }
 }
