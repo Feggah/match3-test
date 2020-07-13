@@ -9,7 +9,7 @@ public class GridController : MonoBehaviour
 
     private Vector2 InitialScreenTouchedPosition;
 
-    private Gem TouchedObject;
+    private GridGem TouchedObject;
 
     public void DetectInputEvents()
     {
@@ -28,7 +28,7 @@ public class GridController : MonoBehaviour
                     break;
 
                 case TouchPhase.Ended:
-                    Gem swipeToGem = GetSwipeGem(touch);
+                    GridGem swipeToGem = GetSwipeGem(touch);
                     if(swipeToGem != null)
                     {
                         StartCoroutine(SwapGem(TouchedObject, swipeToGem, 0.4f));
@@ -38,7 +38,7 @@ public class GridController : MonoBehaviour
         }
     }
 
-    private IEnumerator SwapGem(Gem from, Gem to, float swapDuration)
+    private IEnumerator SwapGem(GridGem from, GridGem to, float swapDuration)
     {
         Vector2 initialGemPosition = from.transform.position;
 
@@ -54,7 +54,7 @@ public class GridController : MonoBehaviour
         AllowSwapBetweenGems(false);
     }
 
-    private Gem GetSwipeGem(Touch touch)
+    private GridGem GetSwipeGem(Touch touch)
     {
         Vector2 direction = (touch.position - InitialScreenTouchedPosition).normalized;
 
@@ -82,9 +82,9 @@ public class GridController : MonoBehaviour
         }
     }
 
-    private void SwapGemIndexes(Gem from, Gem to)
+    private void SwapGemIndexes(GridGem from, GridGem to)
     {
-        Gem auxiliarFromGem = Grid.GridGems[(int)from.Position.x, (int)from.Position.y];
+        GridGem auxiliarFromGem = Grid.GridGems[(int)from.Position.x, (int)from.Position.y];
 
         Grid.GridGems[(int)from.Position.x, (int)from.Position.y] = to;
         Grid.GridGems[(int)to.Position.x, (int)to.Position.y] = auxiliarFromGem;
@@ -94,7 +94,7 @@ public class GridController : MonoBehaviour
         from.ChangeGemPosition(auxiliarVector2.x, auxiliarVector2.y);
     }
 
-    private Gem GetTouchedObject(Touch touch)
+    private GridGem GetTouchedObject(Touch touch)
     {
         Vector2 worldTouchedPosition = Camera.main.ScreenToWorldPoint(touch.position);
 
@@ -102,15 +102,15 @@ public class GridController : MonoBehaviour
 
         if (hitInformation.collider != null)
         {
-            return hitInformation.transform.gameObject.GetComponent<Gem>();
+            return hitInformation.transform.gameObject.GetComponent<GridGem>();
         }
         return null;
     }
 
-    public Gem InstantiateGem(int x, int y)
+    private GridGem InstantiateGem(int x, int y)
     {
         PossibleGem randomGem = Gems[UnityEngine.Random.Range(0, Gems.Length)];
-        Gem newGem = Instantiate(randomGem.GetComponent<Gem>(), new Vector2(x, y), Quaternion.identity);
+        GridGem newGem = Instantiate(randomGem.GetComponent<GridGem>(), new Vector2(x, y), Quaternion.identity);
         newGem.ChangeGemPosition(x, y);
         return newGem;
     }
@@ -126,9 +126,22 @@ public class GridController : MonoBehaviour
 
     private void AllowSwapBetweenGems(bool status)
     {
-        foreach (Gem gem in Grid.GridGems)
+        foreach (GridGem gem in Grid.GridGems)
         {
             gem.transform.GetComponent<Rigidbody2D>().isKinematic = status;
+        }
+    }
+
+    public void CreateGrid()
+    {
+        Grid.GridGems = new GridGem[Grid.Columns, Grid.Rows];
+
+        for (int x = 0; x < Grid.Columns; x++)
+        {
+            for (int y = 0; y < Grid.Rows; y++)
+            {
+                Grid.GridGems[x, y] = InstantiateGem(x, y);
+            }
         }
     }
 }
