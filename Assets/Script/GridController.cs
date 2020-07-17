@@ -1,11 +1,12 @@
 ﻿using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class GridController : MonoBehaviour
 {
     public Grid Grid;
 
-    private PossibleGem[] Gems;
+    private Gem[] Gems;
 
     private Vector2 InitialScreenTouchedPosition;
 
@@ -28,10 +29,13 @@ public class GridController : MonoBehaviour
                     break;
 
                 case TouchPhase.Ended:
-                    GridGem swipeToGem = GetSwipeGem(touch);
-                    if(swipeToGem != null)
+                    if(TouchedObject != null)
                     {
-                        StartCoroutine(SwapGem(TouchedObject, swipeToGem, 0.4f));
+                        GridGem swipeToGem = GetSwipeGem(touch);
+                        if (swipeToGem != null)
+                        {
+                            StartCoroutine(SwapGem(TouchedObject, swipeToGem, 0.4f));
+                        }
                     }
                     break;
             }
@@ -109,15 +113,16 @@ public class GridController : MonoBehaviour
 
     private GridGem InstantiateGem(int x, int y)
     {
-        PossibleGem randomGem = Gems[UnityEngine.Random.Range(0, Gems.Length)];
-        GridGem newGem = Instantiate(randomGem.GetComponent<GridGem>(), new Vector2(x, y), Quaternion.identity);
+        Gem randomGem = Gems[UnityEngine.Random.Range(0, Gems.Length)];
+        GridGem newGem = Instantiate(randomGem, new Vector2(x, y), Quaternion.identity).GetComponent<GridGem>();
         newGem.ChangeGemPosition(x, y);
+        newGem.SetGemType(randomGem.GemType);
         return newGem;
     }
 
     public void LoadGems()
     {
-        Gems = Resources.LoadAll<PossibleGem>("Prefabs");
+        Gems = Resources.LoadAll<Gem>("Prefabs");
         for (int i = 0; i < Gems.Length; i++)
         {
             Gems[i].SetGemType((GemType)i);
