@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class GridGem : Gem
 {
-    public Vector2 Position { get; private set; }
+    public Vector2Int Position { get; private set; }
 
-    public void ChangeGemPosition(float newX, float newY)
+    public void ChangeGemPosition(int newX, int newY)
     {
-        Position = new Vector2(newX, newY);
+        Position = new Vector2Int(newX, newY);
     }
 }

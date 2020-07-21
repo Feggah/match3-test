@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class Grid : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class Grid : MonoBehaviour
     {
         GridController.LoadGems();
         GridController.CreateGrid();
+        GridController.ClearInitialMatches();
     }
 
     void Update()
