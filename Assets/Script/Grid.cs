@@ -8,9 +8,10 @@ public class Grid : MonoBehaviour
 
     public int Columns;
 
-    public GridController GridController;
-
     public GridGem[,] GridGems;
+
+    [SerializeField]
+    private GridController GridController;
 
     void Start()
     {
