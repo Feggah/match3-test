@@ -5,15 +5,20 @@ using UnityEngine;
 
 public class GridController : MonoBehaviour
 {
-    public Grid Grid;
+    [HideInInspector]
+    public bool DetectTouches = true;
+
+    [SerializeField]
+    private Grid Grid;
+
+    [SerializeField]
+    private float GemWidth;
 
     private Gem[] Gems;
 
     private Vector2 InitialScreenTouchedPosition;
 
     private GridGem TouchedObject;
-
-    private bool DetectTouches = true;
 
     private readonly int MinimumMatchNumber = 3;
 
@@ -332,7 +337,7 @@ public class GridController : MonoBehaviour
     private GridGem InstantiateGem(int x, int y)
     {
         Gem randomGem = Gems[Random.Range(0, Gems.Length)];
-        GridGem newGem = Instantiate(randomGem, new Vector2(x, y), Quaternion.identity).GetComponent<GridGem>();
+        GridGem newGem = Instantiate(randomGem, new Vector2(x * GemWidth, y-4), Quaternion.identity).GetComponent<GridGem>();
         newGem.ChangeGemPosition(x, y);
         newGem.SetGemType(randomGem.GemType);
         return newGem;
