@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GridController : MonoBehaviour
 {
     [HideInInspector]
     public bool DetectTouches = true;
+
+    public readonly int MinimumMatchNumber = 3;
 
     [SerializeField]
     private Grid Grid;
@@ -14,13 +17,14 @@ public class GridController : MonoBehaviour
     [SerializeField]
     private float GemWidth;
 
+    [SerializeField]
+    private GameController GameController;
+
     private Gem[] Gems;
 
     private Vector2 InitialScreenTouchedPosition;
 
     private GridGem TouchedObject;
-
-    private readonly int MinimumMatchNumber = 3;
 
     private readonly float DelayBetweenMatches = 2f;
 
@@ -160,6 +164,7 @@ public class GridController : MonoBehaviour
             yield return StartCoroutine(gem.transform.Reduce(Vector3.zero, 0.15f));
             Destroy(gem.gameObject);
         }
+        GameController.UpdateScore(destroySet.Count);
     }
 
     private IEnumerator UpdateGridReferences(HashSet<GridGem> destroyedGems)
@@ -337,7 +342,7 @@ public class GridController : MonoBehaviour
     private GridGem InstantiateGem(int x, int y)
     {
         Gem randomGem = Gems[Random.Range(0, Gems.Length)];
-        GridGem newGem = Instantiate(randomGem, new Vector2(x * GemWidth, y-4), Quaternion.identity).GetComponent<GridGem>();
+        GridGem newGem = Instantiate(randomGem, new Vector2(x * GemWidth, y-3), Quaternion.identity).GetComponent<GridGem>();
         newGem.ChangeGemPosition(x, y);
         newGem.SetGemType(randomGem.GemType);
         return newGem;
