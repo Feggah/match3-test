@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class GridController : MonoBehaviour
 {
@@ -94,6 +95,23 @@ public class GridController : MonoBehaviour
         }
     }
 
+    public IEnumerator CheckPossibleMoves()
+    {
+        if (DetectTouches) { DetectTouches = false; }
+
+        bool shuffleNeeded = true;
+        foreach (GridGem gem in Grid.GridGems)
+        {
+            List<GridGem> neighbors = SearchGemNeighbors(gem);
+            shuffleNeeded = !FindFutureMatches(neighbors, gem.GemType);
+
+            if (!shuffleNeeded) { break; }
+        }
+        if (shuffleNeeded) { yield return StartCoroutine(ShuffleGrid()); }
+
+        if (!DetectTouches) { DetectTouches = true; }
+    }
+
     private void InstantiateGemsAfterDestroy(int x, int numberOfDestroyedColumnGems)
     {
         for (int y = (Grid.Rows - numberOfDestroyedColumnGems); y < Grid.Rows; y++)
@@ -122,6 +140,143 @@ public class GridController : MonoBehaviour
         }
     }
 
+    private bool CalculateFuturePossibleMatch(string direction, Vector2Int lowIndex, Vector2Int highIndex, GemType analyzedGem, int gridPosition)
+    {
+        switch (direction)
+        {
+            case "Left":
+
+                if (lowIndex.x - 2 >= 0)
+                {
+                    bool leftPossibleGem = (Grid.GridGems[lowIndex.x - 2, gridPosition].GemType == analyzedGem);
+                    return leftPossibleGem;
+                }
+
+                break;
+            case "Right":
+
+                if (highIndex.x + 2 < Grid.Columns)
+                {
+                    bool rightPossibleGem = (Grid.GridGems[highIndex.x + 2, gridPosition].GemType == analyzedGem);
+                    return rightPossibleGem;
+                }
+
+                break;
+            case "Up":
+
+                if (highIndex.y + 2 < Grid.Rows)
+                {
+                    bool upPossibleGem = (Grid.GridGems[gridPosition, highIndex.y + 2].GemType == analyzedGem);
+                    return upPossibleGem;
+                }
+
+                break;
+            case "Down":
+
+                if (lowIndex.y - 2 >= 0)
+                {
+                    bool downPossibleGem = (Grid.GridGems[gridPosition, lowIndex.y - 2].GemType == analyzedGem);
+                    return downPossibleGem;
+                }
+
+                break;
+        }
+        return false;
+    }
+
+    private bool FindFutureMatches(List<GridGem> gemList, GemType analyzedGem)
+    {
+        IEnumerable<GridGem> sameGems = gemList.Where(gem => gem.GemType == analyzedGem);
+
+        Vector2Int lowIndex = new Vector2Int(sameGems.Min(gem => gem.Position.x), sameGems.Min(gem => gem.Position.y));
+        Vector2Int highIndex = new Vector2Int(sameGems.Max(gem => gem.Position.x), sameGems.Max(gem => gem.Position.y));
+
+        int horizontalDifference = highIndex.x - lowIndex.x;
+        int verticalDifference = highIndex.y - lowIndex.y;
+
+        if (sameGems.Count() == MinimumMatchNumber - 1)
+        {
+            if (horizontalDifference + verticalDifference > 1) { return false; }
+
+            else if (horizontalDifference == 1)
+            {
+                bool rightMatch = CalculateFuturePossibleMatch("Right", lowIndex, highIndex, analyzedGem, lowIndex.y);
+                bool leftMatch = CalculateFuturePossibleMatch("Left", lowIndex, highIndex, analyzedGem, lowIndex.y);
+                return rightMatch || leftMatch;
+            }
+            else if (verticalDifference == 1)
+            {
+                bool downMatch = CalculateFuturePossibleMatch("Down", lowIndex, highIndex, analyzedGem, lowIndex.x);
+                bool upMatch = CalculateFuturePossibleMatch("Up", lowIndex, highIndex, analyzedGem, highIndex.x);
+                return downMatch || upMatch;
+            }
+        }
+
+        if (sameGems.Count() == MinimumMatchNumber)
+        {
+            if ((horizontalDifference + verticalDifference == 4) && sameGems.Count() == MinimumMatchNumber) { return false; }
+
+            else if (horizontalDifference + verticalDifference == 3) { return true; }
+
+            if (horizontalDifference + verticalDifference < 3)
+            {
+                if (sameGems.Where(gem => gem.Position.y == lowIndex.y).Count() == 2)
+                {
+                    bool leftDownPossibleGem = CalculateFuturePossibleMatch("Left", lowIndex, highIndex, analyzedGem, lowIndex.y);
+                    bool rightDownPossibleGem = CalculateFuturePossibleMatch("Right", lowIndex, highIndex, analyzedGem, lowIndex.y);
+                    return leftDownPossibleGem || rightDownPossibleGem;
+                }
+
+                if (sameGems.Where(gem => gem.Position.y == highIndex.y).Count() == 2)
+                {
+                    bool leftUpPossibleGem = CalculateFuturePossibleMatch("Left", lowIndex, highIndex, analyzedGem, highIndex.y);
+                    bool rightUpPossibleGem = CalculateFuturePossibleMatch("Right", lowIndex, highIndex, analyzedGem, highIndex.y);
+                    return leftUpPossibleGem || rightUpPossibleGem;
+                }
+
+                if (sameGems.Where(gem => gem.Position.x == lowIndex.x).Count() == 2)
+                {
+                    bool downLeftPossibleGem = CalculateFuturePossibleMatch("Down", lowIndex, highIndex, analyzedGem, lowIndex.x);
+                    bool upLeftPossibleGem = CalculateFuturePossibleMatch("Up", lowIndex, highIndex, analyzedGem, lowIndex.x);
+                    return downLeftPossibleGem || upLeftPossibleGem;
+                }
+
+                if (sameGems.Where(gem => gem.Position.x == highIndex.x).Count() == 2)
+                {
+                    bool downRightPossibleGem = CalculateFuturePossibleMatch("Down", lowIndex, highIndex, analyzedGem, highIndex.x);
+                    bool upRightPossibleGem = CalculateFuturePossibleMatch("Up", lowIndex, highIndex, analyzedGem, highIndex.x);
+                    return downRightPossibleGem || upRightPossibleGem;
+                }
+            }
+        }
+
+        if (sameGems.Count() > MinimumMatchNumber && (horizontalDifference + verticalDifference > 1)) { return true; }
+
+        return false;
+    }
+
+    private List<GridGem> SearchGemNeighbors(GridGem gem)
+    {
+        List<GridGem> gemNeighbors = new List<GridGem>();
+
+        int x = (gem.Position.x > 0) ? gem.Position.x - 1 : gem.Position.x;
+
+        while (x < Grid.Columns && x <= (gem.Position.x + 1))
+        {
+            int y = (gem.Position.y > 0) ? gem.Position.y - 1 : gem.Position.y;
+
+            while (y < Grid.Rows && y <= (gem.Position.y + 1))
+            {
+                gemNeighbors.Add(Grid.GridGems[x, y]);
+                y++;
+            }
+
+            x++;
+        }
+
+        return gemNeighbors;
+    }
+
     private IEnumerator TryMatch(GridGem touchedGem, GridGem swipedGem)
     {
         DetectTouches = false;
@@ -142,19 +297,42 @@ public class GridController : MonoBehaviour
 
         if (destroySet.Count >= MinimumMatchNumber)
         {
-            yield return StartCoroutine(UpdateGridGems(destroySet));
+            yield return StartCoroutine(UpdateGrid(destroySet));
+            yield return StartCoroutine(CheckPossibleMoves());
         }
-
+        
         DetectTouches = true;
     }
 
-    private IEnumerator UpdateGridGems(HashSet<GridGem> destroySet)
+    private IEnumerator ShuffleGrid()
+    {
+        AllowSwapBetweenGems(true);
+
+        System.Random random = new System.Random();
+        
+        for(int x = 0; x < Grid.Columns; x++)
+        {
+            for(int y = 0; y < Grid.Rows; y++)
+            {
+                int newX = random.Next(Grid.Columns - x);
+                int newY = random.Next(Grid.Rows - y);
+                yield return StartCoroutine(SwapGem(Grid.GridGems[x, y], Grid.GridGems[newX, newY], 0.02f));
+            }
+        }
+
+        AllowSwapBetweenGems(false);
+
+        yield return new WaitForSeconds(DelayBetweenMatches);
+        yield return StartCoroutine(FindMatchesAfterGridUpdate());
+        yield return StartCoroutine(CheckPossibleMoves());
+    }
+
+    private IEnumerator UpdateGrid(HashSet<GridGem> destroySet)
     {
         yield return StartCoroutine(DestroyMatchedGems(destroySet));
         yield return StartCoroutine(UpdateGridReferences(destroySet));
         yield return StartCoroutine(FindMatchesAfterGridUpdate());
 
-        yield return new WaitForSeconds(0.5f);
     }
 
     private IEnumerator DestroyMatchedGems(HashSet<GridGem> destroySet)
@@ -184,7 +362,7 @@ public class GridController : MonoBehaviour
 
             InstantiateGemsAfterDestroy(x, numberOfDestroyedColumnGems);
         }
-        yield return new WaitForSeconds(DelayBetweenMatches+1f);
+        yield return new WaitForSeconds(DelayBetweenMatches);
     }
 
     private IEnumerator FindMatchesAfterGridUpdate()
@@ -196,7 +374,7 @@ public class GridController : MonoBehaviour
                 HashSet<GridGem> subsequentMatches = SearchMatches(Grid.GridGems[x, y]);
                 if (subsequentMatches.Count >= MinimumMatchNumber)
                 {
-                    yield return StartCoroutine(UpdateGridGems(subsequentMatches));
+                    yield return StartCoroutine(UpdateGrid(subsequentMatches));
                 }
             }
         }
@@ -341,7 +519,7 @@ public class GridController : MonoBehaviour
 
     private GridGem InstantiateGem(int x, int y)
     {
-        Gem randomGem = Gems[Random.Range(0, Gems.Length)];
+        Gem randomGem = Gems[UnityEngine.Random.Range(0, Gems.Length)];
         GridGem newGem = Instantiate(randomGem, new Vector2(x * GemWidth, y-3), Quaternion.identity).GetComponent<GridGem>();
         newGem.ChangeGemPosition(x, y);
         newGem.SetGemType(randomGem.GemType);
