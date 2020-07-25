@@ -18,6 +18,7 @@ public class Grid : MonoBehaviour
         GridController.LoadGems();
         GridController.CreateGrid();
         GridController.ClearInitialMatches();
+        GridController.CheckPossibleMoves();
     }
 
     void Update()
