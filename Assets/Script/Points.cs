@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +12,9 @@ public class Points : MonoBehaviour
 
     [SerializeField]
     private int BaseGoalScore;
+
+    [SerializeField]
+    private GameManager GameManager;
 
     public void SetScore(int newScore)
     {
@@ -32,15 +32,26 @@ public class Points : MonoBehaviour
     {
         if (numberOfDestroyedGems == minimumMatchNumber)
         {
-            SetScore(minimumMatchNumber);
+            SetScore(numberOfDestroyedGems * 2);
         }
         else if (numberOfDestroyedGems > minimumMatchNumber && numberOfDestroyedGems <= 2 * minimumMatchNumber)
         {
-            SetScore(numberOfDestroyedGems * 2);
+            SetScore(numberOfDestroyedGems * 4);
         }
         else
         {
-            SetScore(numberOfDestroyedGems * 3);
+            SetScore(numberOfDestroyedGems * 6);
+        }
+
+        CheckPointsWithGoal();
+    }
+
+    private void CheckPointsWithGoal()
+    {
+        if(Slider.maxValue == Slider.value)
+        {
+            GameManager.Round++;
+            GameManager.EndRound();
         }
     }
 
