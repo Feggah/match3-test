@@ -342,7 +342,7 @@ public class GridController : MonoBehaviour
             yield return StartCoroutine(gem.transform.Reduce(Vector3.zero, 0.15f));
             Destroy(gem.gameObject);
         }
-        GameController.UpdateScore(destroySet.Count);
+        GameManager.UpdateScore(destroySet.Count);
     }
 
     private IEnumerator UpdateGridReferences(HashSet<GridGem> destroyedGems)
