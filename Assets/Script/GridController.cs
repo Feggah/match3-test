@@ -17,7 +17,7 @@ public class GridController : MonoBehaviour
     private float GemWidth;
 
     [SerializeField]
-    private GameManager GameController;
+    private GameManager GameManager;
 
     private Gem[] Gems;
 
