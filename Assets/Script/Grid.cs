@@ -13,12 +13,12 @@ public class Grid : MonoBehaviour
     [SerializeField]
     private GridController GridController;
 
-    void Start()
+    public IEnumerator StartRound()
     {
         GridController.LoadGems();
         GridController.CreateGrid();
         GridController.ClearInitialMatches();
-        GridController.CheckPossibleMoves();
+        yield return StartCoroutine(GridController.CheckPossibleMoves());
     }
 
     void Update()

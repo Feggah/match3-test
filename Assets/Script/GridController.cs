@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class GridController : MonoBehaviour
@@ -19,7 +17,7 @@ public class GridController : MonoBehaviour
     private float GemWidth;
 
     [SerializeField]
-    private GameController GameController;
+    private GameManager GameController;
 
     private Gem[] Gems;
 
@@ -105,7 +103,9 @@ public class GridController : MonoBehaviour
             List<GridGem> neighbors = SearchGemNeighbors(gem);
             shuffleNeeded = !FindFutureMatches(neighbors, gem.GemType);
 
-            if (!shuffleNeeded) { break; }
+            if (!shuffleNeeded) {
+                break; 
+            }
         }
         if (shuffleNeeded) { yield return StartCoroutine(ShuffleGrid()); }
 

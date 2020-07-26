@@ -812,7 +812,7 @@ GameObject:
   - component: {fileID: 680362612}
   - component: {fileID: 680362611}
   m_Layer: 5
-  m_Name: Level
+  m_Name: Round
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -978,6 +978,7 @@ MonoBehaviour:
   Slider: {fileID: 1009841717}
   ScoreText: {fileID: 1089982550}
   BaseGoalScore: 15
+  GameManager: {fileID: 1680061834}
 --- !u!1 &1072159856
 GameObject:
   m_ObjectHideFlags: 0
@@ -1428,7 +1429,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 1:55
+  m_Text: 2:00
 --- !u!222 &1458048802
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1557,7 +1558,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GridController: {fileID: 1977326514}
+  Grid: {fileID: 1977326512}
   Points: {fileID: 1009841718}
+  scene: {fileID: 173560612}
+  RoundText: {fileID: 1712587762}
+  TimerText: {fileID: 1458048801}
   Round: 23
 --- !u!4 &1680061835
 Transform:
@@ -1643,7 +1648,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 23
+  m_Text: 0
 --- !u!222 &1712587763
 CanvasRenderer:
   m_ObjectHideFlags: 0
