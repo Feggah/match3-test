@@ -2032,7 +2032,7 @@ MonoBehaviour:
   DetectTouches: 1
   Grid: {fileID: 1977326512}
   GemWidth: 0.85
-  GameController: {fileID: 1680061834}
+  GameManager: {fileID: 1680061834}
 --- !u!1 &1985746916
 GameObject:
   m_ObjectHideFlags: 0
