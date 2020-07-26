@@ -339,8 +339,9 @@ public class GridController : MonoBehaviour
     {
         foreach (GridGem gem in destroySet)
         {
-            yield return StartCoroutine(gem.transform.Reduce(Vector3.zero, 0.15f));
+            yield return StartCoroutine(gem.transform.Reduce(Vector3.zero, 0.2f));
             Destroy(gem.gameObject);
+            FindObjectOfType<AudioManager>().Play("SelectSound");
         }
         GameManager.UpdateScore(destroySet.Count);
     }
@@ -384,6 +385,7 @@ public class GridController : MonoBehaviour
     {
         Vector2 initialGemPosition = touchedGem.transform.position;
 
+        FindObjectOfType<AudioManager>().Play("SwapSound");
         StartCoroutine(touchedGem.transform.Move(swipedGem.transform.position, swapDuration));
         StartCoroutine(swipedGem.transform.Move(initialGemPosition, swapDuration));
 

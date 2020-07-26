@@ -16,6 +16,7 @@ public class SceneController : MonoBehaviour
 
     public void QuitScene()
     {
+        FindObjectOfType<AudioManager>().Play("SelectSound");
         Application.Quit();
     }
 
@@ -23,6 +24,7 @@ public class SceneController : MonoBehaviour
     {
         if (GridController.DetectTouches)
         {
+            FindObjectOfType<AudioManager>().Play("SelectSound");
             GridController.DetectTouches = false;
             if (ConfirmPanel)
             {
@@ -38,6 +40,7 @@ public class SceneController : MonoBehaviour
             ChangeScene("Menu");
         }
         ConfirmPanel.SetActive(false);
+        FindObjectOfType<AudioManager>().Play("SelectSound");
         GridController.DetectTouches = true;
     }
 }

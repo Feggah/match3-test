@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Text TimerText;
 
-    private double secondsTimer = 0;
+    private double secondsTimer = 0f;
     private int minutesTimer = 2;
 
     [HideInInspector]
@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
     {
         SaveRound();
         scene.ChangeScene("Game");
-
     }
 
     private void UpdateTimer()

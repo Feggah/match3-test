@@ -50,6 +50,7 @@ public class Points : MonoBehaviour
     {
         if(Slider.maxValue == Slider.value)
         {
+            FindObjectOfType<AudioManager>().Play("ClearSound");
             GameManager.Round++;
             GameManager.EndRound();
         }
