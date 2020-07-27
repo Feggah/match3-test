@@ -61,8 +61,8 @@ public class Points : MonoBehaviour
     private void SetRoundGoal(int goalScore)
     {
         Slider.maxValue = goalScore;
-        Slider.value = 570;
-        SetScoreText(570);
+        Slider.value = 0;
+        SetScoreText(0);
     }
 
     private void SetScoreText(int newScore)

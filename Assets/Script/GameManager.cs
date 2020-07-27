@@ -30,9 +30,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Text TimerText;
 
-    private double secondsTimer = 10f;
+    private double secondsTimer = 0f;
 
-    private int minutesTimer = 0;
+    private int minutesTimer = 2;
 
     void Start()
     {
