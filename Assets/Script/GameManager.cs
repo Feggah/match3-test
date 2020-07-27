@@ -1,8 +1,17 @@
 ﻿using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [HideInInspector]
+    public int Round;
+
+    [HideInInspector]
+    public bool ContinueRoundProcess = true;
+
+    public bool CanCount = true;
+
     [SerializeField]
     private GridController GridController;
 
@@ -13,7 +22,7 @@ public class GameManager : MonoBehaviour
     private Points Points;
 
     [SerializeField]
-    private SceneController scene;
+    private SceneController SceneController;
 
     [SerializeField]
     private Text RoundText;
@@ -22,10 +31,8 @@ public class GameManager : MonoBehaviour
     private Text TimerText;
 
     private double secondsTimer = 0f;
-    private int minutesTimer = 2;
 
-    [HideInInspector]
-    public int Round;
+    private int minutesTimer = 2;
 
     void Start()
     {
@@ -49,31 +56,52 @@ public class GameManager : MonoBehaviour
 
     public void EndRound()
     {
+        GridController.DetectTouches = false;
         SaveRound();
-        scene.ChangeScene("Game");
+        SceneController.ChangeScene("Game");
+    }
+
+    public void KillCoroutines()
+    {
+        GridController.Kill();
+    }
+
+    public IEnumerator PanelPopUp(string name)
+    {
+        yield return StartCoroutine(SceneController.PopUp(name));
+    }
+
+    public void ButtonUIPopUp(string name)
+    {
+        StartCoroutine(SceneController.PopUp(name));
     }
 
     private void UpdateTimer()
     {
-        if(secondsTimer < 0f)
+        if (CanCount)
         {
-            minutesTimer--;
-            if (minutesTimer < 0)
+            if (secondsTimer < 0f)
             {
-                SetTimerText(0, 0);
-                EndRound();
+                minutesTimer--;
+                if (minutesTimer < 0)
+                {
+                    SetTimerText(0, 0);
+                    ContinueRoundProcess = false;
+                    KillCoroutines();
+                    StartCoroutine(PanelPopUp("Failed"));
+                }
+                else
+                {
+                    secondsTimer = 60f;
+                    SetTimerText(minutesTimer, (int)secondsTimer);
+                }
             }
-            else
+
+            else if (secondsTimer >= 0f)
             {
-                secondsTimer = 60f;
+                secondsTimer -= Time.deltaTime / 2.5;
                 SetTimerText(minutesTimer, (int)secondsTimer);
             }
-        }
-
-        else if(secondsTimer >= 0f)
-        {
-            secondsTimer -= Time.deltaTime/2.5;
-            SetTimerText(minutesTimer, (int)secondsTimer);
         }
     }
 

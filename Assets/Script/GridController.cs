@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GridController : MonoBehaviour
 {
     [HideInInspector]
-    public bool DetectTouches = true;
+    public bool DetectTouches;
 
     public readonly int MinimumMatchNumber = 3;
 
@@ -15,6 +16,9 @@ public class GridController : MonoBehaviour
 
     [SerializeField]
     private float GemWidth;
+
+    [SerializeField]
+    private SceneController SceneController;
 
     [SerializeField]
     private GameManager GameManager;
@@ -26,6 +30,11 @@ public class GridController : MonoBehaviour
     private GridGem TouchedObject;
 
     private readonly float DelayBetweenMatches = 2f;
+
+    void Awake()
+    {
+        DetectTouches = false;
+    }
 
     public void LoadGems()
     {
@@ -93,6 +102,11 @@ public class GridController : MonoBehaviour
         }
     }
 
+    public void Kill()
+    {
+        StopAllCoroutines();
+    }
+
     public IEnumerator CheckPossibleMoves()
     {
         if (DetectTouches) { DetectTouches = false; }
@@ -107,9 +121,9 @@ public class GridController : MonoBehaviour
                 break; 
             }
         }
-        if (shuffleNeeded) { yield return StartCoroutine(ShuffleGrid()); }
+        if (shuffleNeeded && GameManager.ContinueRoundProcess) { yield return StartCoroutine(ShuffleGrid()); }
 
-        if (!DetectTouches) { DetectTouches = true; }
+        if (!DetectTouches && GameManager.ContinueRoundProcess) { DetectTouches = true; }
     }
 
     private void InstantiateGemsAfterDestroy(int x, int numberOfDestroyedColumnGems)
@@ -250,7 +264,7 @@ public class GridController : MonoBehaviour
             }
         }
 
-        if (sameGems.Count() > MinimumMatchNumber && (horizontalDifference + verticalDifference > 1)) { return true; }
+        if (sameGems.Count() > MinimumMatchNumber && (horizontalDifference + verticalDifference > 2)) { return true; }
 
         return false;
     }
@@ -291,6 +305,7 @@ public class GridController : MonoBehaviour
         {
             yield return new WaitForSeconds(0.2f);
             yield return StartCoroutine(SwapGem(touchedGem, swipedGem, 0.4f));
+            yield return new WaitForSeconds(1f);
         }
 
         AllowSwapBetweenGems(false);
@@ -300,12 +315,14 @@ public class GridController : MonoBehaviour
             yield return StartCoroutine(UpdateGrid(destroySet));
             yield return StartCoroutine(CheckPossibleMoves());
         }
-        
+
         DetectTouches = true;
     }
 
     private IEnumerator ShuffleGrid()
     {
+        yield return StartCoroutine(GameManager.PanelPopUp("Shuffle"));
+
         AllowSwapBetweenGems(true);
 
         System.Random random = new System.Random();
@@ -320,6 +337,8 @@ public class GridController : MonoBehaviour
             }
         }
 
+        yield return StartCoroutine(GameManager.PanelPopUp("Shuffle"));
+
         AllowSwapBetweenGems(false);
 
         yield return new WaitForSeconds(DelayBetweenMatches);
@@ -329,10 +348,10 @@ public class GridController : MonoBehaviour
 
     private IEnumerator UpdateGrid(HashSet<GridGem> destroySet)
     {
+
         yield return StartCoroutine(DestroyMatchedGems(destroySet));
         yield return StartCoroutine(UpdateGridReferences(destroySet));
         yield return StartCoroutine(FindMatchesAfterGridUpdate());
-
     }
 
     private IEnumerator DestroyMatchedGems(HashSet<GridGem> destroySet)

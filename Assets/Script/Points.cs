@@ -52,7 +52,9 @@ public class Points : MonoBehaviour
         {
             FindObjectOfType<AudioManager>().Play("ClearSound");
             GameManager.Round++;
-            GameManager.EndRound();
+            GameManager.ContinueRoundProcess = false;
+            GameManager.KillCoroutines();
+            StartCoroutine(GameManager.PanelPopUp("Completed"));
         }
     }
 
