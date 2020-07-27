@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
@@ -18,7 +17,9 @@ public class Grid : MonoBehaviour
         GridController.LoadGems();
         GridController.CreateGrid();
         GridController.ClearInitialMatches();
+        yield return new WaitForSeconds(2f);
         yield return StartCoroutine(GridController.CheckPossibleMoves());
+        GridController.DetectTouches = true;
     }
 
     void Update()

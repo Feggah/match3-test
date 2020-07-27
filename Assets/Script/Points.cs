@@ -52,15 +52,17 @@ public class Points : MonoBehaviour
         {
             FindObjectOfType<AudioManager>().Play("ClearSound");
             GameManager.Round++;
-            GameManager.EndRound();
+            GameManager.ContinueRoundProcess = false;
+            GameManager.KillCoroutines();
+            StartCoroutine(GameManager.PanelPopUp("Completed"));
         }
     }
 
     private void SetRoundGoal(int goalScore)
     {
         Slider.maxValue = goalScore;
-        Slider.value = 0;
-        SetScoreText(0);
+        Slider.value = 570;
+        SetScoreText(570);
     }
 
     private void SetScoreText(int newScore)
